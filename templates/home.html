@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Digit Recognizer</title>
+
+    <!-- Bootstrap styling----->
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="templates\home.html">
+    <style>
+      html{
+        margin: 0;
+        padding: 0;
+        border: 0;
+        font-size: 100%;
+        font: inherit;
+        vertical-align: baseline;
+        font-family: 'Roboto', sans-serif;
+        font-weight: 100;
+        background: #fff;
+      }
+
+      .nav{
+        background: #3d0e1e;
+        height: 60px;
+      }
+
+      .nav-title{
+        height: 60px;
+        line-height: 60px;
+        padding: 0 40px;
+        color: #fff;
+        margin-left: 35%;
+      }
+
+      #footer{
+        background-color: #212121;
+        height: 45px;
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        line-height: 50px;
+        color: #aaa;
+        text-align: center;
+        width: 100%;
+      }
+
+      .image{
+        margin-left: 35%;
+      }
+
+      .row-1{
+        line-height: 50px;
+        font-size: 2rem;
+        margin-left: 10%;
+        margin-top: 2%;
+      }
+
+      .row-3{
+        padding: 10px;
+        margin-left: 8%;
+      }
+
+      .btn {
+        border-radius: 5px;
+        padding: 10px 15px;
+        font-size: 20px;
+        text-decoration: none;
+        margin: 10px;
+        color: #fff;
+        position: relative;
+        display: inline-block;
+        }
+
+        .btn:active {
+          transform: translate(0px, 5px);
+          -webkit-transform: translate(0px, 5px);
+          box-shadow: 0px 1px 0px 0px;
+        }
+
+        .green {
+          background-color: #2ecc71;
+          box-shadow: 0px 5px 0px 0px #15B358;
+        }
+
+        .red {
+          background-color: #e74c3c;
+          box-shadow: 0px 5px 0px 0px #CE3323;
+          margin-left: 10%;
+        }
+
+        .result{
+          padding-top: 2px;
+          margin-top: 2%;
+          display: grid;
+        }
+
+        .col-1{
+          grid-column: 1;
+          font-size: 2rem;
+          margin-left: 40%;
+        }
+
+        .col-2{
+          grid-column: 2;
+          border: solid black;
+          display: inline-flex;
+          font-size: 1.5rem;
+          padding: 0.25rem 1.5rem;
+          margin: 1rem 0 0;
+        }
+
+    </style>
+
+  </head>
+  <body>
+
+    <div class="nav">
+      <h1 class="nav-title"> -- DIGIT RECOGNIZER -- </h1>
+    </div>
+
+    <div class="image">
+      <div class="row-1">Enter a numeral here...</div>
+      <div class="row-2">
+        <canvas id="canvasBox"position="center" width="500" height="300"></canvas>
+      </div>
+      <div class="row-3">
+        <button id="btnSubmit" class="btn green" onclick="handleImage()">Submit</button>
+        <button class="btn red" onclick="reset()">  Reset</button>
+      </div>
+    </div>
+
+    <div class="result">
+      <div class="col-1">Result:</div>
+      <div class="col-2">
+        <h2 id="guess"></h2>
+      </div>
+    </div>
+
+
+    <div id="footer">
+      &copy; All Rights are Reserved
+    </div>
+
+    <!-- Fabric JS library ----->
+
+    <script type='text/javascript' src='http://cdnjs.cloudflare.com/ajax/libs/fabric.js/1.4.0/fabric.min.js'></script>
+    <script type='text/javascript' src="static\js\jquery-3.2.1.min.js"></script>
+    <script type="text/javascript">
+      var canvas;
+      var image;
+      var brushThick = 20;
+      var brushColour = '#FFFFFF'; // #black
+
+      //Initialize  fabric
+      function initCanvas()
+      {
+          canvas = new fabric.Canvas('canvasBox');
+          canvas.isDrawingMode = true;
+          canvas.freeDrawingBrush.width = brushThick;
+          canvas.freeDrawingBrush.color = brushColour;
+          canvas.backgroundColor = '#3d0e1e';
+      }
+
+      window.onload = function()
+      {
+          initCanvas();
+          // submit button
+          var btnsub = document.getElementById('btnSubmit');
+          btnsub.addEventListener('click', handleImage());
+      };
+
+      //reset canvas
+      function reset()
+      {
+          canvas.clear();
+          $('#guess').text('');
+      }
+
+      function handleImage()
+      {
+          var imgURL = canvas.toDataURL();
+
+          //Send Ajax call
+          $.ajax({
+              type: 'post',
+              url: '/',
+              data: {
+                  imageBase64 : imgURL
+              },
+
+              success: function(data){
+                  $('#guess').text(data.guess);
+              }
+          });
+      }
+  </script>
+
+  </body>
+</html>
